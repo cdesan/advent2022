@@ -74,13 +74,7 @@ public class Carlo6 {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
-		
-		long startTime = System.nanoTime();
 		Part1.Solve();
-		long endTime = System.nanoTime();
-		long duration = (endTime - startTime);
-		
-		System.out.println("Time: " + duration);
 	}
 
 }
