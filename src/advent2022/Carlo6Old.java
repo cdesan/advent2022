@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-public class Carlo6 {
+import advent2022.Carlo6.Part1;
+
+public class Carlo6Old {
 	
 	public class Part1 {
 		
@@ -22,43 +24,29 @@ public class Carlo6 {
 			
 			int[] seen = new int[26];
 			
-			int lastSeen = -1;
-			
-			for(int i = 0; i < block_size; i++) {
-				int c = s.charAt(i) - 97;
-				if(i == 0) {
-					lastSeen = c;
-				}
-				seen[c]++;
-				
-			}
-			
-			for(int i = block_size; i < length; i++) {
-				
-				seen[lastSeen]--;
-				lastSeen = s.charAt(i-(block_size-1))-97;
-				
+			for(int i = 0; i < length - block_size - 1; i++) {
+								
 				boolean is_unique = true;
-
-				int c = s.charAt(i) - 97;
-				seen[c]++;
 				
-				if(seen[c] > 1) {
-					is_unique = false;
-				}
-				
-				if(is_unique) {
-					boolean found = true;
-					for(int j = 0; j < 26; j++) {
-						found = found && seen[j] <= 1;
-						if(!found) {
-							break;
-						}
-					}
-					if(found) {
-						System.out.println(i+1);
+				for(int j = 0; j < block_size; j++) {
+					int c = s.charAt(i+j) - 97;
+					seen[c]++;
+					if(seen[c] > 1) {
+						is_unique = false;
 						break;
 					}
+				}
+				
+				if(!is_unique) {
+					for(int j = 0; j < 26; j++) {
+						seen[j] = 0;
+					}
+					continue;
+				}
+				
+				else {
+					System.out.println(i+block_size);
+					break;
 				}
 				
 			}
@@ -74,7 +62,6 @@ public class Carlo6 {
 
 	public static void main(String[] args) throws FileNotFoundException {
 		// TODO Auto-generated method stub
-		
 		long startTime = System.nanoTime();
 		Part1.Solve();
 		long endTime = System.nanoTime();
