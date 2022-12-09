@@ -6,117 +6,90 @@ import java.util.Scanner;
 
 public class Carlo8 {
 	
-	public static class Tree{
+	
+	public static int visitLeft(int[][] grid, int row, int col) {
 		
-		public int leftHeight = -2;
-		public int upHeight = -2;
-		public int rightHeight = -2;
-		public int downHeight = -2;
+		int n = grid[row][col];
 		
-		public int height;
+		if(col-1 < 0) {
+			return 0;
+		}
 		
-		public boolean visibleLeft = false;
-		public boolean visibleUp = false;
-		public boolean visibleRight = false;
-		public boolean visibleDown = false;
+		int dist = 0;
+		for(int i = col-1; i >= 0; i--) {
+			if(grid[row][i] >= n) {
+				dist = i;
+				break;
+			}
+			dist = i;
+		}
+		
+		return Math.abs(col-dist);
+	}
+	
+	public static int visitRight(int[][] grid, int row, int col) {
+		
+		int n = grid[row][col];
+		
+		int dist = 0;
+		
+		if(col+1 >= grid[row].length) {
+			return 0;
+		}
+		
+		for(int i = col+1; i < grid[row].length; i++) {
+			if(grid[row][i] >= n) {
+				dist = i;
+				break;
+			}
+			dist = i;
 
-				
-		public Tree(int height) {
-			this.height = height;
 		}
-		
-	
-		public boolean isViewable() {
-			return this.visibleLeft || this.visibleUp || this.visibleRight || this.visibleDown;
-		}
-		
-		
-		public String toString() {
-			if(this.isViewable()) {
-				return "*";
-			}
-			else {
-				return "-";
-			}
-		}
-	}
-	
-	public static int visitLeft(Tree[][] grid, int row, int col) {
-		
-		Tree n = grid[row][col];
-		if(n.leftHeight != -2) {
-			return n.leftHeight;
-		}
-		else {
-			int left = visitLeft(grid, row, col-1);
 			
-			n.leftHeight = Math.max(n.height, left);
-			
-			if(left < n.height) {
-				n.visibleLeft = true;
-			}
-			
-			return n.leftHeight;
-		}
-	}
-	
-	public static int visitRight(Tree[][] grid, int row, int col) {
-		
-		Tree n = grid[row][col];
-		if(n.rightHeight != -2) {
-			return n.rightHeight;
-		}
-		else {
-			int right = visitRight(grid, row, col+1);
-			n.rightHeight = Math.max(n.height, right);
-			if(right < n.height) {
-				n.visibleRight = true;
-			}
-			return n.rightHeight;
-		}
+		return Math.abs(col-dist);
 		
 	}
-	public static int visitUp(Tree[][] grid, int row, int col) {
+	public static int visitUp(int[][] grid, int row, int col) {
 		
-		Tree n = grid[row][col];
+		int n = grid[row][col];
 		
-		if(n.upHeight != -2) {
-			return n.upHeight;
+		int dist = 0;
+		
+		if(row-1 < 0) {
+			return 0;
 		}
-		else {
-			
-			int up = visitUp(grid, row-1, col);
-			
-			n.upHeight = Math.max(n.height, up);
-			
-			if(up < n.height) {
-				n.visibleUp = true;
+		
+		for(int i = row-1; i >= 0; i--) {
+			if(grid[i][col] >= n) {
+				dist = i;
+				break;
 			}
+			dist = i;
 
-			return n.upHeight;
 		}
+		
+		return Math.abs(row-dist);
 		
 	}
-	public static int visitDown(Tree[][] grid, int row, int col) {
+	public static int visitDown(int[][] grid, int row, int col) {
+		int n = grid[row][col];
 		
-		Tree n = grid[row][col];
+		int dist = 0;
 		
-		if(n.downHeight != -2) {
-			return n.downHeight;
+		if(row+1 >= grid.length) {
+			return 0;
 		}
-		else {
-			
-			int down = visitDown(grid, row+1, col);
-			
-			n.downHeight = Math.max(n.height,  down);
-			
-			if(down < n.height) {
-				n.visibleDown = true;
+		
+		for(int i = row+1; i < grid.length; i++) {
+			if(grid[i][col] >= n) {
+				dist = i;
+				break;
 			}
-			
-			return n.downHeight;
+			dist = i;
+
 		}
 		
+		return Math.abs(row-dist);
 	}
 		
 	
@@ -131,61 +104,38 @@ public class Carlo8 {
 			int colCount = 99;
 
 			System.out.println(rowCount + " " + colCount);
-			Tree[][] grid = new Tree[rowCount][colCount];
+			int[][] grid = new int[rowCount][colCount];
 			int row = 0;
 			
 			while(scanner.hasNextLine()) {
 				String s = scanner.nextLine();
 				int l = s.length();
-				for(int i = 0; i < s.length(); i++) {
+				for(int i = 0; i < l; i++) {
 					int heightVal = s.charAt(i)-48;
-					grid[row][i] = new Tree(heightVal);
-					
-					if(row == 0) {
-						grid[row][i].upHeight = grid[row][i].height;
-						grid[row][i].visibleUp = true;
-					}
-					if(row == grid.length - 1) {
-						grid[row][i].downHeight = grid[row][i].height;
-						grid[row][i].visibleDown = true;
-					}
-					if(i == 0) {
-						grid[row][i].leftHeight = grid[row][i].height;
-						grid[row][i].visibleLeft = true;
-					}
-					if(i == grid[i].length-1) {
-						grid[row][i].rightHeight = grid[row][i].height;
-						grid[row][i].visibleRight = true;
-					}
+					grid[row][i] = heightVal;
 				}
+		
 				row++;
 			}
 			
+			int maxScore = -1;
+
+			for(int i = 0; i < rowCount; i++) {
+				for(int j = 0; j < colCount; j++) {
+					int upScore = visitUp(grid, i ,j);
+					int rightScore = visitRight(grid,i,j);
+
+					int downScore = visitDown(grid,i,j);
+
+					int leftScore = visitLeft(grid,i,j);
 					
-			//Debug print loop
-			for(int i = 0; i < grid.length; i++) {
-				for(int j = 0; j < grid[i].length; j++) {
-					visitLeft(grid, i, j);
-					visitUp(grid, i, j);
-					visitRight(grid, i, j);
-					visitDown(grid, i, j);
+					int totalScore = upScore * rightScore * downScore * leftScore;
+					maxScore = Math.max(maxScore, totalScore);
+					
 				}
 			}
 			
-			
-			int result = 0;
-			//Debug print loop
-			for(int i = 0; i < grid.length; i++) {
-				for(int j = 0; j < grid[i].length; j++) {
-					System.out.print(grid[i][j]);
-					if(grid[i][j].isViewable()) {
-						result++;
-					}
-				}
-				System.out.print("\n");
-			}
-			
-			System.out.println(result);
+			System.out.println(maxScore);
 		}
 	}
 
